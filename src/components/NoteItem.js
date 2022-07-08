@@ -34,11 +34,9 @@ export default function NoteItem({ note, onDelete, onUpdate }) {
   const deleteNoteOnClick = async (id) => {
     setButtonDisabled(true);
     const response = await deleteNote(id);
-    const data = await response.data;
     onUpdate();
     setButtonDisabled(false);
-    const deletedNote = data.data;
-    onDelete(deletedNote);
+    onDelete(id);
     setMenuOpened(false);
   };
 
@@ -48,7 +46,7 @@ export default function NoteItem({ note, onDelete, onUpdate }) {
       title: noteTitle,
       content: noteContent,
     };
-    await editNote(note._id, noteInfomation);
+    await editNote(note.id,noteInfomation);
     setButtonDisabled(false);
     setIsEdit(!setIsEdit);
   };
@@ -92,7 +90,7 @@ export default function NoteItem({ note, onDelete, onUpdate }) {
               >
                 <Edit sx={{ mr: 2 }} /> Edit
               </MenuItem>
-              <MenuItem onClick={() => deleteNoteOnClick(note._id)}>
+              <MenuItem onClick={() => deleteNoteOnClick(note.id)}>
                 <Delete sx={{ mr: 2 }} /> Delete
               </MenuItem>
             </Menu>

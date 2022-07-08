@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-import { addNotes } from "../functions";
+import { addNotes, uuidv4 } from "../functions";
 
 export default function AddNotes({ onSubmit }) {
   const [loadingButton, setLoadingButton] = useState(false);
@@ -37,15 +37,18 @@ export default function AddNotes({ onSubmit }) {
   const newNote = async (event) => {
     event.preventDefault();
     setLoadingButton(true);
+    const id = uuidv4()
+    try {
+      const newNoteData = { id, title: noteTitle, content: noteContent }
+      const response = await addNotes(newNoteData);
+      setLoadingButton(false);
 
-    const response = await addNotes(noteTitle, noteContent);
-    const data = await response.data;
-    setLoadingButton(false);
-    const addedNote = data.note;
+      onSubmit(newNoteData);
+      setNoteContent("");
+      setNoteTitle("");
+    } catch (error) {
 
-    onSubmit(addedNote);
-    setNoteContent("");
-    setNoteTitle("");
+    }
   };
 
   return (

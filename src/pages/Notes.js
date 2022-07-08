@@ -26,15 +26,14 @@ export default function Notes() {
     setIsSuccess(true);
   };
 
-  const onDelete = (deletedNote) => {
-    const newList = notes.filter((item) => item._id !== deletedNote._id);
+  const onDelete = (id) => {
+    const newList = notes.filter((item) => item.id !== id);
     setNotes(newList);
   };
 
   const fetchMyNotes = async () => {
     const response = await getMyNotes();
-    const data = await response.data;
-    setNotes(data);
+    setNotes(response);
   };
 
   return (

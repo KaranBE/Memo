@@ -1,42 +1,65 @@
-import axios from "axios";
-
-const customAxios = axios.create({
-    baseURL: "https://notes-demo-backend.herokuapp.com",
-});
-
-customAxios.interceptors.request.use((config) => {
-    config.headers["authcookie"] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmFkNTgzZGExOWMxMTZkYzZhYmYzYmUiLCJ1c2VybmFtZSI6ImFzZGFkYXNzIiwiY3JlYXRlZEF0IjoiMjAyMi0wNi0xOFQwNDo0NDo0NS42NDNaIiwidXBkYXRlZEF0IjoiMjAyMi0wNi0xOFQwNDo0NDo0NS42NDNaIiwiaWF0IjoxNjU1NTU4NjQxfQ.GrYzJUeJz6szWI2DJOyjEDptYpVvDUTXxGcdoKkoe6M";
-
-    return config;
-});
-
-customAxios.interceptors.response.use((config) => {
-    if (config.status === 401) {
-        clearAuthToken();
+const request = async ({ endpoint, method, data }) => {
+    switch (method) {
+        case "GET":
+            const response = await fetch(endpoint, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const result = await response.json()
+            return result
+        case "DELETE":
+            await fetch(endpoint, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            break;
+        default:
+            fetch(endpoint, {
+                body: JSON.stringify(data),
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            break;
     }
-    return config;
-});
+};
 
-export const clearAuthToken = () => localStorage.clear();
-export const getAuthToken = () => localStorage.getItem("token");
-export const setAuthToken = (value) => localStorage.setItem("token", value);
+export const uuidv4 = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+});
 
 export const getMyNotes = () => {
-    return customAxios.get("/me/notes");
+    return request({
+        endpoint: 'http://localhost:3000/notes',
+        method: 'GET',
+    })
 };
 
-export const addNotes = (title, content) => {
-    const data = {
-        title: title,
-        content: content,
-    };
-    return customAxios.post("/notes", data);
+export const addNotes = data => {
+    request({
+        endpoint: 'http://localhost:3000/notes',
+        method: 'POST',
+        data
+    });
 };
 
-export const deleteNote = (id) => {
-    return customAxios.delete(`/notes/${id}`);
+export const editNote = (id, data) => {
+    request({
+        endpoint: `http://localhost:3000/notes/${id}`,
+        method: 'PUT',
+        data: data
+    });
 };
 
-export const editNote = (noteId, data) => {
-    return customAxios.put(`/notes/${noteId}`, data);
+export const deleteNote = id => {
+    request({
+        endpoint: `http://localhost:3000/notes/${id}`,
+        method: 'DELETE'
+    });
 };
