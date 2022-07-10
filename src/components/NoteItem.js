@@ -164,6 +164,9 @@ export default function NoteItem({ note, onDelete, onUpdate }) {
             label="Content"
             multiline
             value={noteContent}
+            inputProps={{
+              maxLength: 140,
+            }}
             onChange={(e) => setNoteContent(e.target.value)}
           />
         )}
